@@ -140,6 +140,12 @@ pub fn save_todo_list(todo_list: &TodoList) -> io::Result<()> {
     fs::write("todo_list.json", json)
 }
 
+pub fn reset_todo_list() -> io::Result<()> {
+    fs::remove_file("todo_list.json")?;
+    fs::remove_file("archive.json")?;
+    Ok(())
+}
+
 pub fn save_archived_tasks(archived_tasks: &[Task]) -> io::Result<()> {
     let mut existing_archived_tasks = match fs::read_to_string("archived_tasks.json") {
         Ok(contents) => serde_json::from_str(&contents).unwrap_or_else(|_| Vec::new()),

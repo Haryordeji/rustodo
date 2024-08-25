@@ -4,7 +4,7 @@ mod task;
 
 use std::io::{self, Write};
 use chrono::{Local, Duration, NaiveDate};
-use todo_list::{TodoList, load_todo_list, save_todo_list, save_archived_tasks};
+use todo_list::{TodoList, load_todo_list, save_todo_list, save_archived_tasks, reset_todo_list};
 use task::TaskState;
 
 fn main() -> io::Result<()> {
@@ -38,8 +38,16 @@ fn main() -> io::Result<()> {
             Some("mark") => handle_mark_command(&mut todo_list, &parts),
             Some("delete") => handle_delete_command(&mut todo_list, &parts),
             Some("edit") => handle_edit_command(&mut todo_list, &parts),
+            Some("reset") => {
+                if let Err(e) = reset_todo_list() {
+                    println!("Error resetting todo list: {}", e);
+                } else {
+                    println!("Todo list has been reset. All data has been deleted.");
+                    todo_list = TodoList::new();
+                }
+            },
             Some("quit") | Some("exit") => break,
-            _ => println!("Unknown command. Available commands: today [offset], add <task>, mark done/undone <index>, delete <index>, edit <index> <new description>, quit"),
+            _ => println!("Unknown command. Available commands: today [offset], add <task>, mark done/undone <index>, delete <index>, edit <index> <new description>, quit")
         }
 
         save_todo_list(&todo_list)?;
